@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+
+{% block title %}O'qituvchi Dashboard{% endblock %}
+
+{% block content %}
+<div class="page-header" style="display: flex; justify-content: space-between; align-items: center;">
+    <div>
+        <h2>👨‍🏫 O'qituvchi Dashboard</h2>
+        <p>Testlarni boshqaring va natijalarni kuzating</p>
+    </div>
+    <a href="{% url 'create_test' %}" class="btn btn-success" style="padding: 12px 24px; font-size: 15px;">
+        ➕ Yangi Test Yaratish
+    </a>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 35px;">
+    <div class="stats-card">
+        <div class="number">{{ tests.count }}</div>
+        <div class="label">Jami Testlar</div>
+    </div>
+    <div class="stats-card">
+        <div class="number">{{ tests|sum_questions }}</div>
+        <div class="label">Jami Savollar</div>
+    </div>
+    <div class="stats-card">
+        <div class="number">{{ tests|sum_attempts }}</div>
+        <div class="label">Jami Urinishlar</div>
+    </div>
+</div>
+
+<h3 style="color: #2c3e50; font-size: 18px; font-weight: 600; margin-bottom: 20px; display: flex; align-items: center; gap: 8px;">
+    <span style="width: 4px; height: 24px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 2px;"></span>
+    Mening Testlarim
+</h3>
+
+{% if tests %}
+<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 20px;">
+    {% for test in tests %}
+    <div class="card" style="border-top: 3px solid #667eea;">
+        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+            <h4 style="color: #2c3e50; font-size: 17px; font-weight: 600; flex: 1; line-height: 1.4;">{{ test.title }}</h4>
+            <span class="badge badge-primary">{{ test.questions.count }} savol</span>
+        </div>
+        <p style="color: #6c757d; margin-bottom: 16px; font-size: 13px; line-height: 1.6;">{{ test.description|truncatewords:15 }}</p>
+        <div style="color: #adb5bd; font-size: 12px; margin-bottom: 18px; padding-top: 12px; border-top: 1px solid #f1f3f5; display: flex; align-items: center; gap: 6px;">
+            <svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z"/>
+            </svg>
+            {{ test.created_at|date:"d.m.Y H:i" }}
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+            <a href="{% url 'add_questions' test.id %}" class="btn btn-primary" style="text-align: center; font-size: 13px; padding: 9px;">
+                📝 Savollar
+            </a>
+            <a href="{% url 'view_test_results' test.id %}" class="btn btn-success" style="text-align: center; font-size: 13px; padding: 9px;">
+                📊 Natijalar
+            </a>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+            <a href="{% url 'edit_test' test.id %}" class="btn btn-warning" style="text-align: center; font-size: 13px; padding: 9px;">
+                ✏️ Tahrirlash
+            </a>
+            <a href="{% url 'delete_test' test.id %}" class="btn btn-danger" style="text-align: center; font-size: 13px; padding: 9px;">
+                🗑️ O'chirish
+            </a>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="card" style="text-align: center; padding: 60px 20px; background: linear-gradient(135deg, #f8f9fa 0%, #fff 100%);">
+    <div style="font-size: 64px; margin-bottom: 16px; opacity: 0.3;">📚</div>
+    <h4 style="color: #6c757d; font-size: 16px; font-weight: 500; margin-bottom: 12px;">Hali testlar yo'q</h4>
+    <p style="color: #adb5bd; margin-bottom: 24px; font-size: 14px;">Birinchi testni yaratib boshlang!</p>
+    <a href="{% url 'create_test' %}" class="btn btn-success">➕ Test Yaratish</a>
+</div>
+{% endif %}
+
+{% if tests %}
+<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px;">
+    {% for test in tests %}
+    <div class="card" style="border-left: 3px solid #3498db;">
+        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
+            <h4 style="color: #2c3e50; font-size: 16px; font-weight: 500; flex: 1;">{{ test.title }}</h4>
+            <span class="badge badge-info">{{ test.questions.count }} savol</span>
+        </div>
+        <p style="color: #7f8c8d; margin-bottom: 15px; font-size: 13px; line-height: 1.5;">{{ test.description|truncatewords:15 }}</p>
+        <div style="color: #95a5a6; font-size: 12px; margin-bottom: 15px; padding-top: 10px; border-top: 1px solid #ecf0f1;">
+            📅 {{ test.created_at|date:"d.m.Y H:i" }}
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px;">
+            <a href="{% url 'add_questions' test.id %}" class="btn btn-primary" style="text-align: center; font-size: 13px; padding: 8px;">
+                Savollar
+            </a>
+            <a href="{% url 'view_test_results' test.id %}" class="btn btn-success" style="text-align: center; font-size: 13px; padding: 8px;">
+                Natijalar
+            </a>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+            <a href="{% url 'edit_test' test.id %}" class="btn btn-warning" style="text-align: center; font-size: 13px; padding: 8px;">
+                Tahrirlash
+            </a>
+            <a href="{% url 'delete_test' test.id %}" class="btn btn-danger" style="text-align: center; font-size: 13px; padding: 8px;">
+                O'chirish
+            </a>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="card" style="text-align: center; padding: 60px 20px;">
+    <p style="color: #7f8c8d; margin-bottom: 20px;">Hali testlar yo'q. Birinchi testni yarating!</p>
+    <a href="{% url 'create_test' %}" class="btn btn-success">➕ Test Yaratish</a>
+</div>
+{% endif %}
+{% endblock %}

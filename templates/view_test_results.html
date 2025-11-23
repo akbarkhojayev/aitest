@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+
+{% block title %}Test Natijalari{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 35px;">
+    <h2 style="color: #333; font-size: 32px; font-weight: 700; margin-bottom: 8px;">📊 Test Natijalari</h2>
+    <p style="color: #667eea; font-size: 20px; font-weight: 600;">{{ test.title }}</p>
+</div>
+
+<div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; border-radius: 15px; margin-bottom: 35px; color: white; box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);">
+    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 25px;">
+        <div style="text-align: center;">
+            <div style="font-size: 42px; font-weight: 700; margin-bottom: 5px;">{{ test.questions.count }}</div>
+            <div style="opacity: 0.9; font-size: 16px;">Savollar Soni</div>
+        </div>
+        <div style="text-align: center; border-left: 1px solid rgba(255,255,255,0.3);">
+            <div style="font-size: 42px; font-weight: 700; margin-bottom: 5px;">{{ attempts.count }}</div>
+            <div style="opacity: 0.9; font-size: 16px;">Jami Urinishlar</div>
+        </div>
+    </div>
+</div>
+
+<h3 style="color: #333; font-size: 24px; font-weight: 600; margin-bottom: 25px;">👥 O'quvchilar Natijalari</h3>
+
+{% if attempts %}
+<div style="overflow-x: auto;">
+    <table style="width: 100%; border-collapse: collapse; background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 5px 20px rgba(0,0,0,0.08);">
+        <thead>
+            <tr style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                <th style="padding: 18px; text-align: left; font-weight: 600; font-size: 15px;">O'quvchi</th>
+                <th style="padding: 18px; text-align: center; font-weight: 600; font-size: 15px;">Natija</th>
+                <th style="padding: 18px; text-align: center; font-weight: 600; font-size: 15px;">Foiz</th>
+                <th style="padding: 18px; text-align: center; font-weight: 600; font-size: 15px;">Sana</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for attempt in attempts %}
+            <tr style="border-bottom: 1px solid #f0f0f0; transition: all 0.3s;" onmouseover="this.style.background='#f8f9ff'" onmouseout="this.style.background='white'">
+                <td style="padding: 16px; font-weight: 500; color: #333;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 16px;">
+                            {{ attempt.student.username|slice:":1"|upper }}
+                        </div>
+                        <span>{{ attempt.student.username }}</span>
+                    </div>
+                </td>
+                <td style="padding: 16px; text-align: center; font-weight: 700; font-size: 18px; color: #667eea;">
+                    {{ attempt.score }}/{{ attempt.total_questions }}
+                </td>
+                <td style="padding: 16px; text-align: center;">
+                    <span style="background: {% if attempt.score >= attempt.total_questions|mul:0.8 %}#28a745{% elif attempt.score >= attempt.total_questions|mul:0.6 %}#ffc107{% else %}#dc3545{% endif %}; color: white; padding: 6px 14px; border-radius: 20px; font-weight: 600; font-size: 14px;">
+                        {% widthratio attempt.score attempt.total_questions 100 %}%
+                    </span>
+                </td>
+                <td style="padding: 16px; text-align: center; color: #666;">
+                    {{ attempt.completed_at|date:"d.m.Y H:i" }}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div style="text-align: center; padding: 80px 20px; background: linear-gradient(135deg, #f8f9ff 0%, #fff 100%); border-radius: 15px; border: 2px dashed #ddd;">
+    <div style="font-size: 64px; margin-bottom: 20px; opacity: 0.5;">📊</div>
+    <h3 style="color: #666; font-size: 20px; margin-bottom: 10px;">Hali hech kim test topshirmagan</h3>
+    <p style="color: #999;">O'quvchilar test topshirganda natijalar bu yerda ko'rinadi</p>
+</div>
+{% endif %}
+
+<div style="margin-top: 35px; text-align: center;">
+    <a href="{% url 'dashboard' %}" class="btn btn-primary" style="font-size: 18px; padding: 18px 50px;">
+        🏠 Dashboard ga Qaytish
+    </a>
+</div>
+{% endblock %}

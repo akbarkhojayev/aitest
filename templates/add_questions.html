@@ -1,0 +1,138 @@
+{% extends 'base.html' %}
+
+{% block title %}Savollar Qo'shish{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 35px;">
+    <h2 style="color: #333; font-size: 32px; font-weight: 700; margin-bottom: 8px;">📝 Savollar Qo'shish</h2>
+    <p style="color: #666; font-size: 18px; font-weight: 500;">Test: {{ test.title }}</p>
+</div>
+
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+    <div>
+        <div class="card" style="background: linear-gradient(135deg, #f8f9ff 0%, #fff 100%); position: sticky; top: 20px;">
+            <h4 style="color: #667eea; font-size: 20px; font-weight: 600; margin-bottom: 25px;">➕ Yangi Savol Qo'shish</h4>
+            <form method="POST">
+                {% csrf_token %}
+                
+                <div class="form-group">
+                    <label>❓ Savol matni:</label>
+                    <textarea name="question_text" rows="3" required placeholder="Savolni kiriting..."></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label>🅰️ A) variant:</label>
+                    <input type="text" name="option_a" required placeholder="A variantini kiriting">
+                </div>
+                
+                <div class="form-group">
+                    <label>🅱️ B) variant:</label>
+                    <input type="text" name="option_b" required placeholder="B variantini kiriting">
+                </div>
+                
+                <div class="form-group">
+                    <label>🅲 C) variant:</label>
+                    <input type="text" name="option_c" required placeholder="C variantini kiriting">
+                </div>
+                
+                <div class="form-group">
+                    <label>🅳 D) variant:</label>
+                    <input type="text" name="option_d" required placeholder="D variantini kiriting">
+                </div>
+                
+                <div class="form-group">
+                    <label>✅ To'g'ri javob:</label>
+                    <select name="correct_answer" required style="cursor: pointer;">
+                        <option value="">Tanlang...</option>
+                        <option value="A">A</option>
+                        <option value="B">B</option>
+                        <option value="C">C</option>
+                        <option value="D">D</option>
+                    </select>
+                </div>
+                
+                <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 25px;">
+                    <button type="submit" name="add_more" class="btn btn-primary" style="width: 100%; font-size: 16px;">
+                        ➕ Qo'shish va Davom Etish
+                    </button>
+                    <button type="submit" class="btn btn-success" style="width: 100%; font-size: 16px;">
+                        ✓ Qo'shish va Tugatish
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <div>
+        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; border-radius: 15px; margin-bottom: 20px; color: white; box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);">
+            <h4 style="font-size: 20px; font-weight: 600; margin-bottom: 5px;">Qo'shilgan Savollar</h4>
+            <p style="font-size: 32px; font-weight: 700;">{{ questions.count }}</p>
+        </div>
+        
+        {% if questions %}
+        <div style="max-height: 650px; overflow-y: auto; padding-right: 10px;">
+            {% for question in questions %}
+            <div class="card" style="margin-bottom: 20px; background: linear-gradient(135deg, #f0fff4 0%, #fff 100%); border-left: 4px solid #28a745; position: relative;">
+                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                    <p style="font-weight: 700; color: #333; font-size: 16px; flex: 1; padding-right: 10px;">{{ forloop.counter }}. {{ question.question_text }}</p>
+                    <div style="display: flex; gap: 8px; align-items: center;">
+                        <span style="background: #28a745; color: white; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 600;">
+                            ✓ {{ question.correct_answer }}
+                        </span>
+                        <form method="POST" action="{% url 'delete_question' question.id %}" style="margin: 0;" onsubmit="return confirm('Bu savolni o\'chirmoqchimisiz?');">
+                            {% csrf_token %}
+                            <button type="submit" style="background: #dc3545; color: white; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600; transition: all 0.3s;" onmouseover="this.style.background='#c82333'" onmouseout="this.style.background='#dc3545'">
+                                🗑️
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                <div style="background: white; padding: 12px; border-radius: 8px; margin-top: 12px;">
+                    <p style="margin: 6px 0; padding: 6px 10px; background: #f8f9ff; border-radius: 5px; font-size: 14px;">
+                        <strong style="color: #667eea;">A)</strong> {{ question.option_a }}
+                    </p>
+                    <p style="margin: 6px 0; padding: 6px 10px; background: #f8f9ff; border-radius: 5px; font-size: 14px;">
+                        <strong style="color: #667eea;">B)</strong> {{ question.option_b }}
+                    </p>
+                    <p style="margin: 6px 0; padding: 6px 10px; background: #f8f9ff; border-radius: 5px; font-size: 14px;">
+                        <strong style="color: #667eea;">C)</strong> {{ question.option_c }}
+                    </p>
+                    <p style="margin: 6px 0; padding: 6px 10px; background: #f8f9ff; border-radius: 5px; font-size: 14px;">
+                        <strong style="color: #667eea;">D)</strong> {{ question.option_d }}
+                    </p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div style="text-align: center; padding: 60px 20px; background: linear-gradient(135deg, #f8f9ff 0%, #fff 100%); border-radius: 15px; border: 2px dashed #ddd;">
+            <div style="font-size: 64px; margin-bottom: 15px; opacity: 0.5;">📝</div>
+            <h3 style="color: #666; font-size: 18px; margin-bottom: 8px;">Hali savollar qo'shilmagan</h3>
+            <p style="color: #999; font-size: 14px;">Chap tarafdan savol qo'shing</p>
+        </div>
+        {% endif %}
+        
+        <a href="{% url 'dashboard' %}" class="btn btn-danger" style="margin-top: 20px; width: 100%; text-align: center; font-size: 16px;">
+            🏠 Dashboard ga Qaytish
+        </a>
+    </div>
+</div>
+
+<style>
+    /* Custom scrollbar */
+    div::-webkit-scrollbar {
+        width: 8px;
+    }
+    div::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 10px;
+    }
+    div::-webkit-scrollbar-thumb {
+        background: #667eea;
+        border-radius: 10px;
+    }
+    div::-webkit-scrollbar-thumb:hover {
+        background: #5568d3;
+    }
+</style>
+{% endblock %}

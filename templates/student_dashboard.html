@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+
+{% block title %}O'quvchi Dashboard{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h2>👨‍🎓 O'quvchi Dashboard</h2>
+    <p>Testlarni topshiring va natijalaringizni kuzating</p>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 35px;">
+    <div class="stats-card">
+        <div class="number">{{ tests.count }}</div>
+        <div class="label">Mavjud Testlar</div>
+    </div>
+    <div class="stats-card">
+        <div class="number">{{ attempts.count }}</div>
+        <div class="label">Topshirilgan</div>
+    </div>
+    <div class="stats-card">
+        <div class="number">
+            {% if attempts %}
+                {% widthratio attempts.0.score attempts.0.total_questions 100 %}%
+            {% else %}
+                0%
+            {% endif %}
+        </div>
+        <div class="label">Oxirgi Natija</div>
+    </div>
+</div>
+
+<h3 style="color: #2c3e50; font-size: 18px; font-weight: 600; margin-bottom: 20px; display: flex; align-items: center; gap: 8px;">
+    <span style="width: 4px; height: 24px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 2px;"></span>
+    Mavjud Testlar
+</h3>
+
+{% if tests %}
+<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; margin-bottom: 35px;">
+    {% for test in tests %}
+    <div class="card" style="border-top: 3px solid #27ae60;">
+        <h4 style="color: #2c3e50; font-size: 17px; font-weight: 600; margin-bottom: 10px; line-height: 1.4;">{{ test.title }}</h4>
+        <p style="color: #6c757d; margin-bottom: 16px; font-size: 13px; line-height: 1.6;">{{ test.description|truncatewords:15 }}</p>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; padding-top: 12px; border-top: 1px solid #f1f3f5;">
+            <span style="color: #adb5bd; font-size: 12px; display: flex; align-items: center; gap: 4px;">
+                <svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z"/>
+                </svg>
+                {{ test.teacher.username }}
+            </span>
+            <span class="badge badge-primary">{{ test.questions.count }} savol</span>
+        </div>
+        <a href="{% url 'take_test' test.id %}" class="btn btn-success" style="width: 100%; text-align: center; padding: 11px; font-size: 14px;">
+            🚀 Test Boshlash
+        </a>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="card" style="text-align: center; padding: 60px 20px; background: linear-gradient(135deg, #f8f9fa 0%, #fff 100%);">
+    <div style="font-size: 64px; margin-bottom: 16px; opacity: 0.3;">📚</div>
+    <h4 style="color: #6c757d; font-size: 16px; font-weight: 500;">Hozircha testlar yo'q</h4>
+    <p style="color: #adb5bd; font-size: 14px; margin-top: 8px;">O'qituvchilar test qo'shganda bu yerda ko'rinadi</p>
+</div>
+{% endif %}
+
+<h3 style="color: #2c3e50; font-size: 18px; font-weight: 600; margin-bottom: 20px; display: flex; align-items: center; gap: 8px;">
+    <span style="width: 4px; height: 24px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 2px;"></span>
+    Mening Natijalarim
+</h3>
+
+{% if attempts %}
+<div class="card" style="padding: 0; overflow: hidden;">
+    <table>
+        <thead>
+            <tr>
+                <th>Test</th>
+                <th style="text-align: center;">Natija</th>
+                <th style="text-align: center;">Foiz</th>
+                <th style="text-align: center;">Sana</th>
+                <th style="text-align: center;">Amallar</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for attempt in attempts %}
+            <tr>
+                <td>{{ attempt.test.title }}</td>
+                <td style="text-align: center; font-weight: 600;">
+                    {{ attempt.score }}/{{ attempt.total_questions }}
+                </td>
+                <td style="text-align: center;">
+                    {% widthratio attempt.score attempt.total_questions 100 as percentage %}
+                    <span class="badge {% if percentage >= 80 %}badge-success{% elif percentage >= 60 %}badge-warning{% else %}badge-danger{% endif %}">
+                        {{ percentage }}%
+                    </span>
+                </td>
+                <td style="text-align: center;">
+                    {{ attempt.completed_at|date:"d.m.Y H:i" }}
+                </td>
+                <td style="text-align: center;">
+                    <a href="{% url 'test_result' attempt.id %}" class="btn btn-info" style="padding: 6px 12px; font-size: 13px;">
+                        Ko'rish
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div class="card" style="text-align: center; padding: 40px;">
+    <p style="color: #7f8c8d;">Hali test topshirmadingiz</p>
+</div>
+{% endif %}
+{% endblock %}

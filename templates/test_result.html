@@ -1,0 +1,150 @@
+{% extends 'base.html' %}
+
+{% block title %}Test Natijasi{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 35px;">
+    <h2 style="color: #333; font-size: 32px; font-weight: 700; margin-bottom: 8px;">📊 Test Natijasi</h2>
+    <p style="color: #666; font-size: 16px;">Sizning natijangiz va batafsil tahlil</p>
+</div>
+
+<div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 40px; border-radius: 20px; margin-bottom: 35px; text-align: center; box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);">
+    <h3 style="font-size: 24px; margin-bottom: 20px; opacity: 0.95;">{{ attempt.test.title }}</h3>
+    <div style="background: rgba(255,255,255,0.15); padding: 30px; border-radius: 15px; backdrop-filter: blur(10px); margin-bottom: 20px;">
+        <div style="font-size: 64px; font-weight: 800; margin-bottom: 10px;">
+            {{ attempt.score }} / {{ attempt.total_questions }}
+        </div>
+        <div style="font-size: 36px; font-weight: 600;">
+            {% widthratio attempt.score attempt.total_questions 100 %}%
+        </div>
+    </div>
+    <div style="display: flex; justify-content: center; gap: 30px; margin-top: 25px;">
+        <div>
+            <p style="opacity: 0.9; font-size: 14px; margin-bottom: 5px;">To'g'ri</p>
+            <p style="font-size: 28px; font-weight: 700;">{{ attempt.score }}</p>
+        </div>
+        <div style="border-left: 1px solid rgba(255,255,255,0.3);"></div>
+        <div>
+            <p style="opacity: 0.9; font-size: 14px; margin-bottom: 5px;">Xato</p>
+            <p style="font-size: 28px; font-weight: 700;">{{ attempt.total_questions|add:"-"|add:attempt.score }}</p>
+        </div>
+        <div style="border-left: 1px solid rgba(255,255,255,0.3);"></div>
+        <div>
+            <p style="opacity: 0.9; font-size: 14px; margin-bottom: 5px;">Sana</p>
+            <p style="font-size: 16px; font-weight: 600;">{{ attempt.completed_at|date:"d.m.Y H:i" }}</p>
+        </div>
+    </div>
+</div>
+
+{% if ai_analysis %}
+<div class="card" style="background: linear-gradient(135deg, #e3f2fd 0%, #fff 100%); border-left: 5px solid #2196f3; margin-bottom: 35px; padding: 30px;">
+    <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 25px; padding-bottom: 20px; border-bottom: 2px solid #e3f2fd;">
+        <div style="font-size: 56px; animation: pulse 2s infinite;">🤖</div>
+        <div>
+            <h3 style="color: #1565c0; font-size: 26px; font-weight: 700; margin-bottom: 6px; letter-spacing: -0.5px;">AI Tahlil va Tavsiyalar</h3>
+            <p style="color: #1976d2; font-size: 14px; font-weight: 500;">Sun'iy intellekt tomonidan batafsil tahlil qilingan</p>
+        </div>
+    </div>
+    <div style="white-space: pre-wrap; color: #2c3e50; line-height: 1.9; background: white; padding: 25px; border-radius: 12px; font-size: 14px; font-family: 'Courier New', monospace; box-shadow: inset 0 2px 8px rgba(0,0,0,0.05); max-height: 600px; overflow-y: auto;">{{ ai_analysis.analysis_text }}</div>
+</div>
+
+<style>
+    @keyframes pulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.1); }
+    }
+    
+    /* Custom scrollbar for AI analysis */
+    div::-webkit-scrollbar {
+        width: 10px;
+    }
+    div::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 10px;
+    }
+    div::-webkit-scrollbar-thumb {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 10px;
+    }
+    div::-webkit-scrollbar-thumb:hover {
+        background: linear-gradient(135deg, #5568d3 0%, #6a3f8f 100%);
+    }
+</style>
+{% endif %}
+
+<h3 style="color: #333; font-size: 24px; font-weight: 600; margin-bottom: 25px;">📝 Batafsil Javoblar</h3>
+
+{% for answer in answers %}
+<div class="card" style="border-left: 4px solid {% if answer.is_correct %}#28a745{% else %}#dc3545{% endif %}; background: linear-gradient(135deg, {% if answer.is_correct %}#f0fff4{% else %}#fff5f5{% endif %} 0%, #fff 100%); margin-bottom: 20px;">
+    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 18px;">
+        <h4 style="color: {% if answer.is_correct %}#28a745{% else %}#dc3545{% endif %}; font-size: 18px; font-weight: 600; flex: 1; line-height: 1.6;">
+            <span style="background: {% if answer.is_correct %}#28a745{% else %}#dc3545{% endif %}; color: white; padding: 4px 12px; border-radius: 20px; font-size: 14px; margin-right: 10px;">
+                {{ forloop.counter }}
+            </span>
+            {{ answer.question.question_text }}
+        </h4>
+        <span style="font-size: 32px;">{% if answer.is_correct %}✅{% else %}❌{% endif %}</span>
+    </div>
+    
+    <div style="display: grid; gap: 10px; margin-bottom: 18px;">
+        <div style="padding: 12px; background: white; border-radius: 8px; border: 2px solid {% if answer.selected_answer == 'A' %}{% if answer.is_correct %}#28a745{% else %}#dc3545{% endif %}{% else %}#f0f0f0{% endif %};">
+            <strong style="color: #667eea; margin-right: 8px;">A)</strong>
+            <span style="color: #333;">{{ answer.question.option_a }}</span>
+            {% if answer.selected_answer == 'A' %}
+                <span style="float: right; font-weight: 600; color: {% if answer.is_correct %}#28a745{% else %}#dc3545{% endif %};">
+                    {% if answer.is_correct %}✓ Sizning javobingiz{% else %}✗ Sizning javobingiz{% endif %}
+                </span>
+            {% endif %}
+            {% if answer.question.correct_answer == 'A' and not answer.is_correct %}
+                <span style="float: right; font-weight: 600; color: #28a745;">✓ To'g'ri javob</span>
+            {% endif %}
+        </div>
+        
+        <div style="padding: 12px; background: white; border-radius: 8px; border: 2px solid {% if answer.selected_answer == 'B' %}{% if answer.is_correct %}#28a745{% else %}#dc3545{% endif %}{% else %}#f0f0f0{% endif %};">
+            <strong style="color: #667eea; margin-right: 8px;">B)</strong>
+            <span style="color: #333;">{{ answer.question.option_b }}</span>
+            {% if answer.selected_answer == 'B' %}
+                <span style="float: right; font-weight: 600; color: {% if answer.is_correct %}#28a745{% else %}#dc3545{% endif %};">
+                    {% if answer.is_correct %}✓ Sizning javobingiz{% else %}✗ Sizning javobingiz{% endif %}
+                </span>
+            {% endif %}
+            {% if answer.question.correct_answer == 'B' and not answer.is_correct %}
+                <span style="float: right; font-weight: 600; color: #28a745;">✓ To'g'ri javob</span>
+            {% endif %}
+        </div>
+        
+        <div style="padding: 12px; background: white; border-radius: 8px; border: 2px solid {% if answer.selected_answer == 'C' %}{% if answer.is_correct %}#28a745{% else %}#dc3545{% endif %}{% else %}#f0f0f0{% endif %};">
+            <strong style="color: #667eea; margin-right: 8px;">C)</strong>
+            <span style="color: #333;">{{ answer.question.option_c }}</span>
+            {% if answer.selected_answer == 'C' %}
+                <span style="float: right; font-weight: 600; color: {% if answer.is_correct %}#28a745{% else %}#dc3545{% endif %};">
+                    {% if answer.is_correct %}✓ Sizning javobingiz{% else %}✗ Sizning javobingiz{% endif %}
+                </span>
+            {% endif %}
+            {% if answer.question.correct_answer == 'C' and not answer.is_correct %}
+                <span style="float: right; font-weight: 600; color: #28a745;">✓ To'g'ri javob</span>
+            {% endif %}
+        </div>
+        
+        <div style="padding: 12px; background: white; border-radius: 8px; border: 2px solid {% if answer.selected_answer == 'D' %}{% if answer.is_correct %}#28a745{% else %}#dc3545{% endif %}{% else %}#f0f0f0{% endif %};">
+            <strong style="color: #667eea; margin-right: 8px;">D)</strong>
+            <span style="color: #333;">{{ answer.question.option_d }}</span>
+            {% if answer.selected_answer == 'D' %}
+                <span style="float: right; font-weight: 600; color: {% if answer.is_correct %}#28a745{% else %}#dc3545{% endif %};">
+                    {% if answer.is_correct %}✓ Sizning javobingiz{% else %}✗ Sizning javobingiz{% endif %}
+                </span>
+            {% endif %}
+            {% if answer.question.correct_answer == 'D' and not answer.is_correct %}
+                <span style="float: right; font-weight: 600; color: #28a745;">✓ To'g'ri javob</span>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+<div style="text-align: center; margin-top: 40px;">
+    <a href="{% url 'dashboard' %}" class="btn btn-primary" style="font-size: 18px; padding: 18px 50px;">
+        🏠 Dashboard ga Qaytish
+    </a>
+</div>
+{% endblock %}
