@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block title %}Video Darsni O'chirish{% endblock %}
+
+{% block content %}
+<div style="max-width: 600px; margin: 0 auto;">
+    <div style="text-align: center; margin-bottom: 40px;">
+        <div style="font-size: 64px; margin-bottom: 15px;">⚠️</div>
+        <h2 style="color: #dc3545; font-size: 32px; font-weight: 700; margin-bottom: 8px;">Video Darsni O'chirish</h2>
+        <p style="color: #666; font-size: 16px;">Bu amalni qaytarib bo'lmaydi!</p>
+    </div>
+    
+    <div class="card" style="background: linear-gradient(135deg, #fff5f5 0%, #fff 100%); border-left: 4px solid #dc3545;">
+        <div style="background: #fff; padding: 20px; border-radius: 10px; margin-bottom: 25px;">
+            <h4 style="color: #333; font-size: 20px; font-weight: 600; margin-bottom: 15px;">{{ video.title }}</h4>
+            <p style="color: #666; margin-bottom: 15px; line-height: 1.6;">{{ video.description }}</p>
+        </div>
+        
+        <div style="background: #fff; padding: 20px; border-radius: 10px; margin-bottom: 25px; border: 2px solid #dc3545;">
+            <h4 style="color: #dc3545; font-size: 18px; font-weight: 600; margin-bottom: 12px;">⚠️ Ogohlantirish</h4>
+            <p style="color: #666;">Video dars butunlay o'chiriladi va uni qaytarib bo'lmaydi.</p>
+        </div>
+        
+        <form method="POST">
+            {% csrf_token %}
+            <div style="display: flex; gap: 12px;">
+                <button type="submit" class="btn btn-danger" style="flex: 1; font-size: 18px; padding: 16px;">
+                    🗑️ Ha, O'chirish
+                </button>
+                <a href="{% url 'video_lessons' %}" class="btn btn-success" style="flex: 1; text-align: center; font-size: 18px; padding: 16px;">
+                    ✕ Yo'q, Bekor qilish
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

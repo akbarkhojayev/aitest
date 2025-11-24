@@ -14,4 +14,11 @@ urlpatterns = [
     path('take-test/<int:test_id>/', views.take_test, name='take_test'),
     path('test-result/<int:attempt_id>/', views.test_result, name='test_result'),
     path('view-results/<int:test_id>/', views.view_test_results, name='view_test_results'),
+    
+    # Video darslar
+    path('videos/', views.video_lessons, name='video_lessons'),
+    path('create-video/', views.create_video, name='create_video'),
+    path('edit-video/<int:video_id>/', views.edit_video, name='edit_video'),
+    path('delete-video/<int:video_id>/', views.delete_video, name='delete_video'),
+    path('watch-video/<int:video_id>/', views.watch_video, name='watch_video'),
 ]

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import UserProfile, Test, Question, TestAttempt, Answer, AIAnalysis
+from .models import UserProfile, Test, Question, TestAttempt, Answer, AIAnalysis, VideoLesson
 
 @admin.register(UserProfile)
 class UserProfileAdmin(admin.ModelAdmin):
@@ -30,3 +30,8 @@ class AnswerAdmin(admin.ModelAdmin):
 class AIAnalysisAdmin(admin.ModelAdmin):
     list_display = ['attempt', 'created_at']
     list_filter = ['created_at']
+
+@admin.register(VideoLesson)
+class VideoLessonAdmin(admin.ModelAdmin):
+    list_display = ['title', 'teacher', 'created_at']
+    list_filter = ['created_at', 'teacher']

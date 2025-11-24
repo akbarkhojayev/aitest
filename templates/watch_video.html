@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ video.title }}{% endblock %}
+
+{% block content %}
+<div style="max-width: 1000px; margin: 0 auto;">
+    <div style="margin-bottom: 30px;">
+        <a href="{% url 'video_lessons' %}" style="color: #667eea; text-decoration: none; font-size: 14px; display: inline-flex; align-items: center; gap: 6px;">
+            ← Barcha videolarga qaytish
+        </a>
+    </div>
+    
+    <div class="card" style="padding: 0; overflow: hidden;">
+        <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
+        
+        <div style="border-radius: 8px; overflow: hidden; background: #000;">
+            {% if video.get_video_id %}
+            <div id="player" data-plyr-provider="youtube" data-plyr-embed-id="{{ video.get_video_id }}"></div>
+            {% else %}
+            <div style="padding: 100px 20px; text-align: center; color: white;">
+                <p style="font-size: 24px; margin-bottom: 10px;">❌</p>
+                <p>Video yuklanmadi</p>
+                <p style="font-size: 14px; margin-top: 8px; opacity: 0.8;">YouTube URL noto'g'ri kiritilgan</p>
+            </div>
+            {% endif %}
+        </div>
+        
+        <script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
+        <script>
+            const player = new Plyr('#player', {
+                youtube: {
+                    noCookie: true,
+                    rel: 0,
+                    showinfo: 0,
+                    iv_load_policy: 3,
+                    modestbranding: 1
+                }
+            });
+        </script>
+        
+        <div style="padding: 30px;">
+            <h2 style="color: #2c3e50; font-size: 28px; font-weight: 700; margin-bottom: 15px;">{{ video.title }}</h2>
+            
+            <div style="display: flex; gap: 20px; align-items: center; padding: 15px 0; border-top: 1px solid #e9ecef; border-bottom: 1px solid #e9ecef; margin-bottom: 20px;">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span style="font-size: 20px;">👨‍🏫</span>
+                    <span style="color: #6c757d; font-size: 14px;">{{ video.teacher.username }}</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span style="font-size: 20px;">📅</span>
+                    <span style="color: #6c757d; font-size: 14px;">{{ video.created_at|date:"d F Y" }}</span>
+                </div>
+            </div>
+            
+            {% if video.description %}
+            <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; border-left: 4px solid #667eea;">
+                <h4 style="color: #2c3e50; font-size: 16px; font-weight: 600; margin-bottom: 10px;">📄 Tavsif</h4>
+                <p style="color: #495057; line-height: 1.8; white-space: pre-line;">{{ video.description }}</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

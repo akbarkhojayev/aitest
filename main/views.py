@@ -3,7 +3,7 @@ from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib import messages
-from .models import UserProfile, Test, Question, TestAttempt, Answer, AIAnalysis
+from .models import UserProfile, Test, Question, TestAttempt, Answer, AIAnalysis, VideoLesson
 import json
 import requests
 from django.conf import settings
@@ -66,7 +66,11 @@ def create_test(request):
     if request.method == 'POST':
         title = request.POST.get('title')
         description = request.POST.get('description')
-        test = Test.objects.create(teacher=request.user, title=title, description=description)
+        test = Test.objects.create(
+            teacher=request.user, 
+            title=title, 
+            description=description
+        )
         messages.success(request, 'Test yaratildi! Endi savollar qo\'shing.')
         return redirect('add_questions', test_id=test.id)
     
@@ -212,6 +216,70 @@ def delete_test(request, test_id):
         return redirect('dashboard')
     
     return render(request, 'delete_test.html', {'test': test})
+
+@login_required
+def video_lessons(request):
+    """Barcha video darslarni ko'rsatish"""
+    videos = VideoLesson.objects.all().order_by('-created_at')
+    return render(request, 'video_lessons.html', {'videos': videos})
+
+@login_required
+def create_video(request):
+    """Yangi video dars qo'shish"""
+    profile = UserProfile.objects.get(user=request.user)
+    if profile.user_type != 'teacher':
+        messages.error(request, 'Faqat o\'qituvchilar video qo\'sha oladi!')
+        return redirect('video_lessons')
+    
+    if request.method == 'POST':
+        title = request.POST.get('title')
+        description = request.POST.get('description')
+        video_url = request.POST.get('video_url')
+        
+        VideoLesson.objects.create(
+            teacher=request.user,
+            title=title,
+            description=description,
+            video_url=video_url
+        )
+        messages.success(request, 'Video dars muvaffaqiyatli qo\'shildi!')
+        return redirect('video_lessons')
+    
+    return render(request, 'create_video.html')
+
+@login_required
+def edit_video(request, video_id):
+    """Video darsni tahrirlash"""
+    video = get_object_or_404(VideoLesson, id=video_id, teacher=request.user)
+    
+    if request.method == 'POST':
+        video.title = request.POST.get('title')
+        video.description = request.POST.get('description')
+        video.video_url = request.POST.get('video_url')
+        video.save()
+        messages.success(request, 'Video dars yangilandi!')
+        return redirect('video_lessons')
+    
+    return render(request, 'edit_video.html', {'video': video})
+
+@login_required
+def delete_video(request, video_id):
+    """Video darsni o'chirish"""
+    video = get_object_or_404(VideoLesson, id=video_id, teacher=request.user)
+    
+    if request.method == 'POST':
+        video_title = video.title
+        video.delete()
+        messages.success(request, f'"{video_title}" video darsi o\'chirildi!')
+        return redirect('video_lessons')
+    
+    return render(request, 'delete_video.html', {'video': video})
+
+@login_required
+def watch_video(request, video_id):
+    """Videoni to'liq ko'rish"""
+    video = get_object_or_404(VideoLesson, id=video_id)
+    return render(request, 'watch_video.html', {'video': video})
 
 @login_required
 def delete_question(request, question_id):

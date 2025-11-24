@@ -1,6 +1,6 @@
-# Django Test Tizimi - AI Tahlil bilan
+# 🎓 Django Test Tizimi - AI Tahlil va Video Darslar
 
-Professional test tizimi Django fullstack loyihasi. Teacher va Student uchun alohida interfeys, AI tahlil va batafsil natijalar.
+Professional test tizimi Django fullstack loyihasi. Teacher va Student uchun alohida interfeys, AI tahlil, video darslar va zamonaviy dizayn.
 
 ## Xususiyatlar
 

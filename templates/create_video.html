@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block title %}Video Dars Qo'shish{% endblock %}
+
+{% block content %}
+<div style="max-width: 700px; margin: 0 auto;">
+    <div style="text-align: center; margin-bottom: 40px;">
+        <div style="font-size: 64px; margin-bottom: 15px;">🎥</div>
+        <h2 style="color: #333; font-size: 32px; font-weight: 700; margin-bottom: 8px;">Video Dars Qo'shish</h2>
+        <p style="color: #666; font-size: 16px;">YouTube video havolasini kiriting</p>
+    </div>
+    
+    <div class="card" style="background: linear-gradient(135deg, #fff5f5 0%, #fff 100%); border-left: 4px solid #e74c3c;">
+        <form method="POST">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label>📝 Video nomi:</label>
+                <input type="text" name="title" required placeholder="Masalan: Matematika - 1-dars">
+            </div>
+            
+            <div class="form-group">
+                <label>📄 Tavsif:</label>
+                <textarea name="description" rows="4" placeholder="Video haqida qisqacha ma'lumot..."></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label>🎥 YouTube video havolasi:</label>
+                <input type="url" name="video_url" required placeholder="https://www.youtube.com/watch?v=...">
+                <small style="color: #6c757d; font-size: 13px; display: block; margin-top: 6px;">
+                    💡 YouTube video havolasini to'liq nusxalang
+                </small>
+            </div>
+            
+            <div style="background: #fff3cd; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #ffc107;">
+                <p style="color: #856404; font-size: 14px; margin-bottom: 8px; font-weight: 600;">📌 Qanday havola olish kerak:</p>
+                <ol style="color: #856404; font-size: 13px; margin-left: 20px; line-height: 1.8;">
+                    <li>YouTube da videoni oching</li>
+                    <li>"Ulashish" (Share) tugmasini bosing</li>
+                    <li>Havolani nusxalang</li>
+                    <li>Bu yerga joylashtiring</li>
+                </ol>
+            </div>
+            
+            <div style="display: flex; gap: 12px; margin-top: 30px;">
+                <button type="submit" class="btn btn-success" style="flex: 1; font-size: 18px; padding: 16px;">
+                    ✓ Video Qo'shish
+                </button>
+                <a href="{% url 'video_lessons' %}" class="btn btn-danger" style="padding: 16px 30px;">
+                    ✕ Bekor qilish
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

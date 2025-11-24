@@ -59,3 +59,47 @@ class AIAnalysis(models.Model):
     
     def __str__(self):
         return f"Analysis for {self.attempt.student.username} - {self.attempt.test.title}"
+
+class VideoLesson(models.Model):
+    teacher = models.ForeignKey(User, on_delete=models.CASCADE, related_name='video_lessons')
+    title = models.CharField(max_length=200)
+    description = models.TextField(blank=True)
+    video_url = models.URLField(help_text="YouTube video havolasi")
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return self.title
+    
+    def get_video_id(self):
+        """YouTube video ID ni olish"""
+        if not self.video_url:
+            return None
+        
+        try:
+            if 'youtube.com/watch?v=' in self.video_url:
+                return self.video_url.split('watch?v=')[1].split('&')[0]
+            elif 'youtu.be/' in self.video_url:
+                return self.video_url.split('youtu.be/')[1].split('?')[0]
+            elif 'youtube.com/embed/' in self.video_url:
+                return self.video_url.split('embed/')[1].split('?')[0]
+            elif 'youtube.com/shorts/' in self.video_url:
+                return self.video_url.split('shorts/')[1].split('?')[0]
+        except Exception as e:
+            print(f"Video ID olishda xato: {e}")
+            return None
+        
+        return None
+    
+    def get_thumbnail_url(self):
+        """YouTube video thumbnail rasmini olish"""
+        video_id = self.get_video_id()
+        if video_id:
+            return f'https://img.youtube.com/vi/{video_id}/maxresdefault.jpg'
+        return None
+    
+    def get_watch_url(self):
+        """YouTube da ochish havolasi"""
+        video_id = self.get_video_id()
+        if video_id:
+            return f'https://www.youtube.com/watch?v={video_id}'
+        return self.video_url
